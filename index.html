@@ -251,30 +251,39 @@ function buildGlobeTexture(geojson) {
     return [(lon + 180) / 360 * W, (90 - lat) / 180 * H];
   }
 
-  function drawRing(ring, fill) {
+  function drawRing(ring) {
+    if (!ring || ring.length < 2) return;
+    let prevLon = ring[0][0];
+    let started = false;
     ctx.beginPath();
-    ring.forEach(([lon, lat], i) => {
+    ring.forEach(([lon, lat]) => {
+      // Break path on antimeridian jumps (> 180° longitude shift)
+      const jump = Math.abs(lon - prevLon) > 180;
       const [x, y] = project(lon, lat);
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      if (!started || jump) { ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+      prevLon = lon;
     });
-    ctx.closePath();
-    if (fill) ctx.fill();
     ctx.stroke();
   }
 
   function drawPolygon(coords, fill) {
-    // Outer ring fill
-    if (fill && coords[0]) {
+    if (!coords || !coords[0]) return;
+    if (fill) {
+      // Fill outer ring — use same antimeridian-safe approach
+      let prevLon = coords[0][0][0];
       ctx.beginPath();
       coords[0].forEach(([lon, lat], i) => {
+        const jump = i > 0 && Math.abs(lon - prevLon) > 180;
         const [x, y] = project(lon, lat);
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        if (i === 0 || jump) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+        prevLon = lon;
       });
       ctx.closePath();
       ctx.fill();
     }
-    // All rings stroked
-    coords.forEach(ring => drawRing(ring, false));
+    coords.forEach(ring => drawRing(ring));
   }
 
   // Land fill pass
@@ -569,28 +578,39 @@ const loaderLabel = document.getElementById('loader-label');
     loaderFill.style.width = '55%';
     loaderLabel.textContent = 'Converting borders';
 
-    // Inline micro TopoJSON → GeoJSON converter (arcs only, no external lib needed)
+    // Inline TopoJSON → GeoJSON converter (correct delta-decode then reverse)
     function topoToGeo(topology, objectName) {
       const obj = topology.objects[objectName];
       const transform = topology.transform;
       const scale = transform ? transform.scale : [1, 1];
       const translate = transform ? transform.translate : [0, 0];
 
-      function decodeArc(arc) {
+      // Pre-decode ALL arcs once (delta → absolute, then apply transform)
+      const decodedArcs = topology.arcs.map(arc => {
         let x = 0, y = 0;
         return arc.map(([dx, dy]) => {
           x += dx; y += dy;
           return [x * scale[0] + translate[0], y * scale[1] + translate[1]];
         });
+      });
+
+      // Normalize longitude to [-180, 180]
+      function normLon(lon) {
+        while (lon > 180)  lon -= 360;
+        while (lon < -180) lon += 360;
+        return lon;
       }
 
       function decodeRing(indices) {
         const pts = [];
-        indices.forEach(i => {
-          const arc = i < 0 ? topology.arcs[~i].slice().reverse() : topology.arcs[i].slice();
-          const decoded = decodeArc(arc);
-          if (pts.length) decoded.shift();
-          pts.push(...decoded);
+        indices.forEach(idx => {
+          // Negative index means reversed arc — reverse AFTER decoding
+          let arcPts = idx < 0
+            ? decodedArcs[~idx].slice().reverse()
+            : decodedArcs[idx].slice();
+          // Drop first point of subsequent arcs (shared node)
+          if (pts.length) arcPts = arcPts.slice(1);
+          arcPts.forEach(([lon, lat]) => pts.push([normLon(lon), lat]));
         });
         return pts;
       }
@@ -617,7 +637,7 @@ const loaderLabel = document.getElementById('loader-label');
     loaderFill.style.width = '85%';
 
     const texCanvas = buildGlobeTexture(geojson);
-    const texture = new THREE.CanvasTexture(texCanvas); 
+    const texture = new THREE.CanvasTexture(texCanvas);
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
     earthMat.map = texture;
