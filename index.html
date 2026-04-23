@@ -181,7 +181,7 @@
   <div class="corner bl"></div><div class="corner br"></div>
 
   <div id="topbar">
-    <div class="logo">AR Globe <span>/ Prototype v0.2</span></div>
+    <div class="logo">Globe <span>/ Prototype v0.2</span></div>
     <div class="top-right">
       <div class="badge live">Live</div>
       <div class="badge" id="coord-display">0.0°N  0.0°E</div>
@@ -205,8 +205,8 @@
     <button class="ctrl-btn" onclick="resetView()">Reset</button>
     <button class="ctrl-btn" id="auto-btn" onclick="toggleAuto()">Auto-rotate</button>
     <div class="ctrl-sep"></div>
-    <button class="ctrl-btn" onclick="toggleAtmo()">Atmosphere</button>
-    <button class="ctrl-btn" onclick="toggleGrid()">Grid</button>
+    <!--<button class="ctrl-btn" onclick="toggleAtmo()">Atmosphere</button> 
+    <button class="ctrl-btn" onclick="toggleGrid()">Grid</button> -->
     <div class="ctrl-sep"></div>
     <button id="ar-btn" onclick="openArModal()">⬡ Enter AR</button>
   </div>
@@ -287,8 +287,8 @@ function buildGlobeTexture(geojson) {
   }
 
   // Land fill pass
-  ctx.fillStyle = 'rgba(0, 40, 70, 0.95)';
-  ctx.strokeStyle = 'rgba(0, 212, 255, 0)';
+  ctx.fillStyle = 'rgb(75, 165, 123)';
+  ctx.strokeStyle = 'rgb(33, 63, 133)';
   ctx.lineWidth = 0;
   geojson.features.forEach(f => {
     const g = f.geometry;
@@ -298,8 +298,8 @@ function buildGlobeTexture(geojson) {
   });
 
   // Border stroke pass
-  ctx.strokeStyle = 'rgba(0, 212, 255, 0.75)';
-  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = 'rgb(33, 63, 133)';
+  ctx.lineWidth = 1.6;
   ctx.fillStyle = 'transparent';
   geojson.features.forEach(f => {
     const g = f.geometry;
@@ -361,7 +361,7 @@ scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, 
 
 // Earth — placeholder while texture loads
 const earthGeo = new THREE.SphereGeometry(1, 64, 64);
-const earthMat = new THREE.MeshPhongMaterial({ color: 0x071828, emissive: 0x010810, specular: 0x112244, shininess: 15 });
+const earthMat = new THREE.MeshPhongMaterial({ color: 0x2e6aa3, emissive: 0x010810, specular: 0x112244, shininess: 15 });
 const earth = new THREE.Mesh(earthGeo, earthMat);
 scene.add(earth);
 
@@ -395,15 +395,15 @@ earth.add(gridGroup);
 // Atmosphere
 const atmosphere = new THREE.Mesh(
   new THREE.SphereGeometry(1.08, 32, 32),
-  new THREE.MeshPhongMaterial({ color: 0x0044cc, transparent: true, opacity: 0.12, side: THREE.FrontSide })
+  new THREE.MeshPhongMaterial({ color: 0x4a78d4, transparent: true, opacity: 0.12, side: THREE.FrontSide })
 );
-scene.add(atmosphere);
+//scene.add(atmosphere);
 
 // Outer glow
-scene.add(new THREE.Mesh(
-  new THREE.SphereGeometry(1.12, 32, 32),
-  new THREE.MeshBasicMaterial({ color: 0x003388, transparent: true, opacity: 0.06, side: THREE.BackSide })
-));
+//scene.add(new THREE.Mesh(
+  //new THREE.SphereGeometry(1.12, 32, 32),
+  //new THREE.MeshBasicMaterial({ color: 0x0254db, transparent: true, opacity: 0.06, side: THREE.BackSide })
+//));
 
 // Region markers
 const markerGroup = new THREE.Group();
@@ -430,11 +430,11 @@ regions.forEach((r, i) => {
 earth.add(markerGroup);
 
 // Lights
-scene.add(new THREE.AmbientLight(0x334466, 1.2));
-const sunLight = new THREE.DirectionalLight(0x8899cc, 1.8);
+scene.add(new THREE.AmbientLight(0x6e8bc4, 1.2));
+const sunLight = new THREE.DirectionalLight(0x9eb0e6, 1.8);
 sunLight.position.set(5, 3, 5);
 scene.add(sunLight);
-const rimLight = new THREE.DirectionalLight(0x001133, 0.6);
+const rimLight = new THREE.DirectionalLight(0x003091, 0.6);
 rimLight.position.set(-5, -2, -3);
 scene.add(rimLight);
 
