@@ -617,7 +617,7 @@ const loaderLabel = document.getElementById('loader-label');
     loaderFill.style.width = '85%';
 
     const texCanvas = buildGlobeTexture(geojson);
-    //const texture = new THREE.CanvasTexture(texCanvas); 
+    const texture = new THREE.CanvasTexture(texCanvas); 
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
     earthMat.map = texture;
