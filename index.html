@@ -60,7 +60,7 @@
   @keyframes pulse-dot { 0%,100%{opacity:1}50%{opacity:0.3} }
 
   #region-panel {
-    position: absolute; bottom: 110px; left: 28px; width: 260px;
+    position: absolute; bottom: 110px; left: 28px; width: 400px;
     background: var(--panel); border: 0.5px solid rgba(0,212,255,0.25);
     border-radius: 4px; padding: 18px 20px; pointer-events: auto;
     backdrop-filter: blur(12px); transition: opacity 0.3s, transform 0.3s;
@@ -444,7 +444,7 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let isDragging = false, autoRotate = false;
 let prevMouse = { x: 0, y: 0 };
-let rotationX = 0.3, rotationY = 0, targetX = 0.3, targetY = 0;
+let rotationX = 0.1, rotationY = -0.2, targetX = 0.1, targetY = -0.2;
 let zoom = 2.8, targetZoom = 2.8;
 let lastTouchDist = 0;
 let atmoVisible = true, gridVisible = true;
@@ -497,9 +497,6 @@ function handleClick(cx, cy) {
   if (hits.length > 0) {
     const idx = hits[0].object.userData.regionIndex;
     showRegion(idx);
-    targetY = -(regions[idx].lon * Math.PI / 180);
-    targetX = -(regions[idx].lat * Math.PI / 180) * 0.6;
-    targetZoom = 1.8;
   }
 }
 
@@ -515,7 +512,7 @@ function showRegion(idx) {
 }
 
 function closePanel() { document.getElementById('region-panel').classList.remove('visible'); }
-function resetView() { targetX = 0.3; targetY = 0; targetZoom = 2.8; closePanel(); }
+function resetView() { targetX = 0.1; targetY = -0.2; targetZoom = 2.8; closePanel(); }
 function toggleAuto() { autoRotate = !autoRotate; document.getElementById('auto-btn').classList.toggle('active', autoRotate); }
 function toggleAtmo() { atmoVisible = !atmoVisible; atmosphere.visible = atmoVisible; }
 function toggleGrid() { gridVisible = !gridVisible; gridGroup.visible = gridVisible; }
