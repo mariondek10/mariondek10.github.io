@@ -1,48 +1,52 @@
-# xilva-project
+# Xilva Project - Interactive Globe & Analysis Dashboard
 
-This template should help get you started developing with Vue 3 in Vite.
+An interactive web application combining a 3D globe visualization with a dynamic dashboard to analyze environmental and investment projects (e.g., reforestation, solar grids).
 
-## Recommended IDE Setup
+When a user selects a region on the interactive globe, the Vue.js dashboard updates automatically to display complex project data through beautiful D3.js charts.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## ✨ Features
 
-## Recommended Browser Setup
+- **Interactive 3D Globe**: Built with standard web technologies (HTML/JS) and embedded within the app.
+- **Dynamic Dashboard**: Built with Vue 3 and TypeScript for a smooth, reactive user experience.
+- **Advanced Visualizations (D3.js)**:
+  - **Risk Flags**: Displays the number of Green, Mitigated (Blue), Yellow, and Red flags.
+  - **Pillars Radar Chart**: Evaluates the project across 6 pillars (Design, Governance, Financial, Impact, Safeguards, Growth).
+  - **Diverging Bar Chart**: Compares positive vs. negative findings.
+  - **Carbon Impact**: Line chart comparing "Business As Usual" (BAU) vs. Project scenarios over time.
+  - **Stakeholder Network**: A force-directed graph illustrating the connections between the project, stakeholders, and SDGs.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## 🛠️ Tech Stack
 
-## Type Support for `.vue` Imports in TS
+- **Framework**: [Vue 3](https://vuejs.org/) (Composition API, `<script setup>`)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Language**: TypeScript
+- **Visualizations**: [D3.js](https://d3js.org/)
+- **3D Globe**: Custom implementation via iframe (`/public/globe.html`)
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## 📊 Data Integration (CSV Format)
 
-## Customize configuration
+The dashboard expects data to be formatted in a specific way. Here is the required structure for the project data (1 row = 1 project):
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+| Project_ID | Project_Name        | Flag_Green | Flag_Mitigated | Flag_Yellow | Flag_Red | Design_Pos | Design_Neg | ... | BAU_2023 | Proj_2023 | ... | Stakeholders | SDGs            |
+| :--------- | :------------------ | :--------- | :------------- | :---------- | :------- | :--------- | :--------- | :-- | :------- | :-------- | :-- | :----------- | :-------------- |
+| Madagascar | Madagascar Reforest | 12         | 4              | 2           | 0        | 42         | 5          | ... | 1000     | 1000      | ... | WWF - Gov    | SDG 13 - SDG 15 |
 
-## Project Setup
+_Note: Stakeholders and SDGs must be separated by a dash (`-`) to be properly parsed by the Network chart._
+
+---
+
+## 🚀 Project Setup
+
+Ensure you have [Node.js](https://nodejs.org/) installed, then run the following commands:
+
+### Install dependencies
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Compile and Hot-Reload for development
 
 ```sh
 npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```
